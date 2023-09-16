@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Course } from '../../courses/entities/course.entity';
 
 @Entity()
 export class Student {
@@ -13,6 +14,10 @@ export class Student {
 
   @Column()
   address: string;
+
+  @ManyToMany(() => Course, { cascade: true })
+  @JoinTable()
+  courses: Course[];
 
   constructor(student: Partial<Student>) {
     Object.assign(this, student);

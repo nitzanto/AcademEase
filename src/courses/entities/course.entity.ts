@@ -5,6 +5,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+import { Student } from '../../students/entities/student.entity';
 
 @Entity()
 export class Course {
@@ -16,6 +17,9 @@ export class Course {
 
   @Column()
   year: number;
+
+  @ManyToMany(() => Student, student => student.courses)
+  students: Student[];
 
   constructor(course: Partial<Course>) {
     Object.assign(this, course);
