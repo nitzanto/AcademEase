@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { EntityManager, Repository } from 'typeorm';
@@ -10,7 +10,8 @@ export class StudentsService {
   constructor(
     @InjectRepository(Student)
     private readonly studentsRepository: Repository<Student>,
-    private readonly entityManager: EntityManager) {
+    private readonly entityManager: EntityManager,
+  ) {
   }
 
   async create(createStudentDto: CreateStudentDto) {
@@ -23,7 +24,7 @@ export class StudentsService {
   }
 
   findOne(student_id: number) {
-    return this.studentsRepository.findOneBy({student_id});
+    return this.studentsRepository.findOneBy({ student_id });
   }
 
   async update(student_id: number, updateStudentDto: UpdateStudentDto) {
@@ -31,6 +32,11 @@ export class StudentsService {
   }
 
   async remove(student_id: number) {
-    return this.studentsRepository.delete(student_id);
+    // Find the student by ID
+    const student = await this.findOne(student_id);
+
+
+    // Now, delete the student
+    await this.studentsRepository.remove(student);
   }
 }
