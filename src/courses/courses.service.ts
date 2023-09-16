@@ -31,6 +31,7 @@ export class CoursesService {
   }
 
   async remove(course_name: string) {
-    await this.coursesRepository.delete(course_name);
+    const course = await this.findOne(course_name);
+    await this.coursesRepository.remove(course);
   }
 }

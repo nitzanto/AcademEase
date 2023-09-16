@@ -27,8 +27,8 @@ export class CoursesController {
     return this.coursesService.update(id, updateCourseDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return this.coursesService.remove(id);
+  @Delete(':course_name')
+  async remove(@Param('course_name') course_name: string) {
+    return this.coursesService.remove(course_name);
   }
 }

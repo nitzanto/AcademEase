@@ -12,13 +12,14 @@ export class Course {
   @PrimaryGeneratedColumn()
   course_id: number;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true })
   course_name: string;
 
   @Column()
   year: number;
 
   @ManyToMany(() => Student, student => student.courses)
+  @JoinTable()
   students: Student[];
 
   constructor(course: Partial<Course>) {
