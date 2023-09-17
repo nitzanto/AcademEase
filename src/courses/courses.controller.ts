@@ -2,7 +2,6 @@ import { Controller, Get, Post, Body, Param, Delete, Put, Res, NotFoundException
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
-import { Course } from './entities/course.entity';
 import { Response } from 'express';
 import { ManageCourseStudentsDto } from './dto/manage-course-students.dto';
 
@@ -15,7 +14,7 @@ export class CoursesController {
   @Post()
   async createCourse(@Res() res: Response, @Body() createCourseDto: CreateCourseDto) {
     try {
-      const course = await this.coursesService.createCourse(createCourseDto);
+      await this.coursesService.createCourse(createCourseDto);
       return res.json({ message: `Course created successfully` });
     } catch (err) {
       return res.status(500).json({ error: `Error when attempting to create course ${err.message}` });
@@ -58,7 +57,7 @@ export class CoursesController {
     }
   }
 
-  @HttpCode(204)
+  @HttpCode(200)
   @Delete(':course_name')
   async removeCourse(@Res() res: Response, @Param('course_name') course_name: string) {
     try {
