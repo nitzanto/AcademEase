@@ -43,7 +43,13 @@ export class CoursesService {
   }
 
   async removeCourse(course_name: string): Promise<void> {
-    const course = await this.findOneCourse(course_name);
+    const course = await this.coursesRepository.findOne({
+      where: { course_name },
+      relations: ['students'],
+    });
+
+    course.students = []
+    await this.coursesRepository.save(course)
     await this.coursesRepository.remove(course)
   }
 

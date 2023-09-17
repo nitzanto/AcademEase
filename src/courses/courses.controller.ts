@@ -12,7 +12,7 @@ export class CoursesController {
   }
 
   @Post()
-  async create(@Res() res: Response, @Body() createCourseDto: CreateCourseDto) {
+  async createCourse(@Res() res: Response, @Body() createCourseDto: CreateCourseDto) {
     try {
       await this.coursesService.createCourse(createCourseDto);
       return res.json({ message: `Course created successfully` });
@@ -22,46 +22,45 @@ export class CoursesController {
   }
 
   @Get()
-  async findAll(): Promise<Course[]> {
+  async findAllCourses(@Res() res:Response) {
     try {
-      return await this.coursesService.findAllCourses();
+      const courses = await this.coursesService.findAllCourses()
+      return res.status(200).json(courses);
     } catch (err) {
       if(err instanceof NotFoundException) {
         throw err;
       }
-      throw new Error(`Error when attempting to find all courses, err: ${err}`);
+      return res.status(500).json({ error: `Error when attempting to find courses: ${err.message}` });
     }
   }
 
   @Get(':course_name')
-  async findOne(@Param('course_name') course_name: string): Promise<Course> {
+  async findOneCourse(@Param('course_name') course_name: string , @Res() res:Response){
     try {
-      return await this.coursesService.findOneCourse(course_name);
+      const course = await this.coursesService.findOneCourse(course_name);
+      return res.status(200).json(course);
     } catch (err) {
-      if(err instanceof NotFoundException) {
-        throw err;
-      }
-      throw new Error(`Error when attempting to find course ${course_name}, err: ${err}`);
+      return res.status(500).json({ error: `Error when attempting to find course ${course_name}: ${err.message}` });
     }
   }
 
   @Put(':course_name')
-  async update(@Res() res: Response, @Param('course_name') course_name: string, @Body() updateCourseDto: UpdateCourseDto) {
+  async updateCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() updateCourseDto: UpdateCourseDto) {
     try {
       await this.coursesService.updateCourse(course_name, updateCourseDto);
       return res.json({ message: `Course: ${course_name} updated successfully` });
     } catch (err) {
-      throw new Error(`Error when updating course ${course_name}, err: ${err}`);
+      return res.status(500).json({ error: `Error when updating course: ${err.message}` });
     }
   }
 
   @Delete(':course_name')
-  async remove(@Res() res: Response, @Param('course_name') course_name: string) {
+  async removeCourse(@Res() res: Response, @Param('course_name') course_name: string) {
     try {
       await this.coursesService.removeCourse(course_name);
       return res.json({ message: `Course: ${course_name} removed successfully` });
     } catch (err) {
-      throw new Error(`Error when removing course ${course_name}, err: ${err}`);
+      return res.status(500).json({ error: `Error when attempting to remove course: ${err.message}` });
     }
   }
 
@@ -74,7 +73,7 @@ export class CoursesController {
       return res.json({ message: `Students assigned successfully to ${course_name}` });
 
     } catch (err) {
-      throw new Error(`Error when attempting to assign students, err: ${err}`);
+      return res.status(500).json({ error: `Error when attempting to assign students: ${err.message}` });
     }
 
   }
@@ -87,7 +86,7 @@ export class CoursesController {
 
       return res.json({ message: `Students unassigned successfully from ${course_name}` });
     } catch (err) {
-      throw new Error(`Error when attempting to un-assign students, err: ${err}`);
+      return res.status(500).json({ error: `Error when attempting to un-assign students: ${err.message}` });
     }
   }
 }
