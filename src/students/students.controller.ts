@@ -24,8 +24,8 @@ export class StudentsController {
   ) {
   }
 
-  @Post()
   @HttpCode(201)
+  @Post()
   async createStudent(@Body() createStudentDto: CreateStudentDto, @Res() res: Response) {
     try {
       await this.studentsService.createStudent(createStudentDto);
@@ -35,10 +35,12 @@ export class StudentsController {
     }
   }
 
-  @Get()
+
   @HttpCode(200)
+  @Get()
   async findAllStudents(
-    @Query('year', new ParseIntPipe({ optional: true })) year?: number): Promise<Student[]> {
+    @Res() res: Response,
+    @Query('year', new ParseIntPipe({ optional: true })) year?: number) {
     try {
       let students: Student[];
       if (year) {
@@ -47,42 +49,47 @@ export class StudentsController {
         students = await this.studentsService.findAllStudents();
       }
 
-      return students;
+      return res.json(students);
 
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
       }
-      throw new Error(`An error occurred while attempting to find all students: ${err}`);
+
+      return res.status(500).json({ error: `An error occurred while attempting to find all students: ${err.message}` });
     }
   }
 
   @HttpCode(200)
   @Get(':student_id')
   async findOneStudent(
+    @Res() res: Response,
     @Param('student_id', ParseIntPipe) student_id: number,
     @Query('year', new ParseIntPipe({ optional: true })) year?: number,
-  ): Promise<Student> {
+  ) {
     try {
+      let student: Student;
       if (!year) {
-        return await this.studentsService.findOneStudent(student_id);
+        student = await this.studentsService.findOneStudent(student_id);
       } else {
-        return await this.studentsService.getStudentCoursesByYear(student_id, year);
+        student = await this.studentsService.getStudentCoursesByYear(student_id, year);
       }
+
+      return res.json(student);
     } catch (err) {
       if (err instanceof NotFoundException) {
         throw err;
       }
-      throw new Error(`An error occurred while finding the student: ${err}`);
+      return res.status(500).json({ error: `An error occurred while finding the student: ${err.message}` });
     }
-
   }
 
+  @HttpCode(200)
   @Put(':student_id')
-  @HttpCode(204)
-  async updateStudent(@Param('student_id', ParseIntPipe) student_id: number,
-                      @Body() updateStudentDto: UpdateStudentDto,
-                      @Res() res: Response) {
+  async updateStudent(
+    @Param('student_id', ParseIntPipe) student_id: number,
+    @Body() updateStudentDto: UpdateStudentDto,
+    @Res() res: Response) {
     try {
       await this.studentsService.updateStudent(student_id, updateStudentDto);
       return res.json({ message: 'Student updated successfully' });
@@ -91,6 +98,7 @@ export class StudentsController {
     }
   }
 
+  @HttpCode(204)
   @Delete(':student_id')
   async removeStudent(@Res() res: Response, @Param('student_id', ParseIntPipe) student_id: number) {
     try {
