@@ -12,55 +12,33 @@ export class StudentCourseService {
     private readonly studentRepository: Repository<Student>,
     @InjectRepository(Course)
     private readonly courseRepository: Repository<Course>,
-    private readonly entityManager: EntityManager,
   ) {
   }
 
   async assignStudentsToCourse(course_name: string, dto: AssignStudentsToCourseDto) {
     // Fetch the course and students from the database
-    const { studentIds } = dto;
-    const course = await this.courseRepository.findOneBy({ course_name });
-    console.log('Course is...:', course);
+    const { course , students } = await this.getStudentsAndCourse(course_name, dto);
 
-    const students = await this.studentRepository.find({
-      where: {
-        student_id: In(studentIds),
-      },
-    });
-    console.log('Students are....:', students);
     if (!course || students.length === 0) {
       // Handle not found errors or empty studentIds array
       return null;
     }
 
     for (let student of students) {
-      if (!student.courses) {
-        student.courses = [];
-      }
-
       student.courses.push(course);
       await this.studentRepository.save(student);
     }
 
     // Assign students to the course
     course.students = students;
-    console.log('managed to assign to the course!!!');
     // Save the changes
-    await this.entityManager.save(course);
+    await this.courseRepository.save(course);
     return course;
   }
 
-  async unAssignStudentsFromCourse(course_name: string, dto: AssignStudentsToCourseDto) {
+  async unAssignStudentsFromCourse(course_name: string, dto: AssignStudentsToCourseDto): Promise<void> {
     // handle if student doesnt exist within that course
-    const { studentIds } = dto;
-    const course = await this.courseRepository.findOneBy({ course_name });
-
-    const students = await this.studentRepository.find({
-      where: {
-        student_id: In(studentIds),
-      },
-      relations: ['courses'], // Load the students' courses
-    });
+    const { course , students } = await this.getStudentsAndCourse(course_name, dto);
 
     for (let student of students) {
       if (student.courses) {
@@ -77,6 +55,21 @@ export class StudentCourseService {
         await this.courseRepository.save(course);
       }
     }
+  }
+
+  async getStudentsAndCourse(course_name: string, dto: AssignStudentsToCourseDto): Promise<{ course: Course; students: Student[] }> {
+
+    const { studentIds } = dto;
+    const course = await this.courseRepository.findOneBy({ course_name });
+
+    const students = await this.studentRepository.find({
+      where: {
+        student_id: In(studentIds),
+      },
+      relations: ['courses'], // Load the students' courses
+    });
+
+    return { course, students };
   }
 
 }
