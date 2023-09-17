@@ -3,10 +3,9 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { StudentsModule } from './students/students.module';
 import { CoursesModule } from './courses/courses.module';
-import { StudentCourseModule } from './student-course/student-course.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, StudentsModule, CoursesModule, StudentCourseModule],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), DatabaseModule, StudentsModule, CoursesModule],
   controllers: [],
   providers: [],
 })

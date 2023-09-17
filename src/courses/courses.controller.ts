@@ -4,6 +4,7 @@ import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { Course } from './entities/course.entity';
 import { Response } from 'express';
+import { ManageCourseStudentsDto } from './dto/manage-course-students.dto';
 
 @Controller('courses')
 export class CoursesController {
@@ -56,5 +57,40 @@ export class CoursesController {
     } catch (err) {
       throw new Error(`Error when removing course ${course_name}, err: ${err}`);
     }
+  }
+
+
+  @Post('assign/:course_name')
+  async assignStudentsToCourse(
+    @Param('course_name') course_name: string,
+    @Body() dto: ManageCourseStudentsDto,
+  ) {
+    const result = await this.coursesService.assignStudentsToCourse(
+      course_name,
+      dto,
+    );
+
+    if (result) {
+      return {
+        message: 'Students assigned to the course successfully.',
+      };
+    } else {
+      return {
+        message: 'Course or students not found.',
+      };
+    }
+  }
+
+
+  @Put('unassign/:course_name')
+  async unAssignStudentsToCourse(
+    @Param('course_name') course_name: string,
+    @Body() dto: ManageCourseStudentsDto,
+  ) {
+    // Call the service to assign students to the course
+    return await this.coursesService.unAssignStudentsFromCourse(
+      course_name,
+      dto,
+    );
   }
 }
