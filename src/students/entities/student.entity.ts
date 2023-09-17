@@ -15,7 +15,7 @@ export class Student {
   @Column()
   address: string;
 
-  @ManyToMany(() => Course, { cascade: true, onDelete: 'CASCADE'  })
+  @ManyToMany(() => Course, { cascade: true, onDelete: 'CASCADE' })
   @JoinTable()
   courses: Course[];
 

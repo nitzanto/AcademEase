@@ -14,62 +14,57 @@ export class StudentsService {
   ) {
   }
 
-  async create(createStudentDto: CreateStudentDto) {
+  async create(createStudentDto: CreateStudentDto): Promise<void> {
     const student = new Student(createStudentDto);
     await this.entityManager.save(student);
   }
 
-  async findAll() {
-    return await this.studentsRepository.find({ relations: ['courses'] });
+
+  async findAll(): Promise<Student[]> {
+    const students = await this.studentsRepository.find({ relations: ['courses'] });
+    if (!students) {
+      throw new NotFoundException('Couldnt find students');
+    }
+    return students;
   }
 
-  findOne(student_id: number) {
-    return this.studentsRepository.findOne({
+  async findOne(student_id: number): Promise<Student> {
+    const student = await this.studentsRepository.findOne({
       where: { student_id },
-      relations: ['courses'], // Load the student's courses
+      relations: ['courses'],
     });
+
+    if (!student) {
+      throw new NotFoundException(`Couldnt find student with ID: ${student_id}`);
+    }
+
+    return student;
   }
 
-  async update(student_id: number, updateStudentDto: UpdateStudentDto) {
+  async update(student_id: number, updateStudentDto: UpdateStudentDto): Promise<void> {
     await this.studentsRepository.update(student_id, updateStudentDto);
   }
 
-  async remove(student_id: number) {
-    // Find the student by ID
+  async remove(student_id: number): Promise<void> {
     const student = await this.findOne(student_id);
 
     student.courses = [];
     await this.studentsRepository.save(student);
 
-    // Now, delete the student
     await this.studentsRepository.remove(student);
   }
 
   async getStudentCoursesByYear(student_id: number, year: number): Promise<Student> {
-    const student = await this.studentsRepository.findOne({
-      where: { student_id },
-      relations: ['courses'], // Load the student's courses
-    });
+    const student = await this.findOne(student_id);
 
-    console.log('Thats the student with courses: ', student);
-
-    if (!student) {
-      throw new NotFoundException(`Student with ID ${student_id} not found`);
-    }
-
-    // Filter courses by the specified year
     student.courses = student.courses.filter(course => course.year === year);
 
     return student;
   }
 
 
-  async getStudentsCoursesByYear(year: number) {
-    const students = await this.studentsRepository.find({
-      where: {},
-      relations: ['courses'],
-    });
-
+  async getStudentsCoursesByYear(year: number): Promise<Student[]> {
+    const students = await this.findAll();
 
     // Filter courses for each student by the specified year
     students.forEach(student => {
