@@ -28,4 +28,17 @@ export class StudentCourseController {
     }
   }
 
+
+  @Post('assign/:course_name')
+  async unAssignStudentsToCourse(
+    @Param('course_name') course_name: string,
+    @Body() assignStudentsDto: AssignStudentsToCourseDto,
+  ) {
+    // Call the service to assign students to the course
+    return await this.studentCourseService.unAssignStudentsFromCourse(
+      course_name,
+      assignStudentsDto,
+    );
+  }
+
 }

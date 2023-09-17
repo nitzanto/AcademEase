@@ -16,7 +16,7 @@ export class StudentCourseService {
   ) {
   }
 
-  async assignStudentsToCourse(course_name, dto: AssignStudentsToCourseDto) {
+  async assignStudentsToCourse(course_name: string, dto: AssignStudentsToCourseDto) {
     // Fetch the course and students from the database
     const { studentIds } = dto;
     const course = await this.courseRepository.findOneBy({ course_name });
@@ -33,6 +33,15 @@ export class StudentCourseService {
       return null;
     }
 
+    for (let student of students) {
+      if (!student.courses) {
+        student.courses = [];
+      }
+
+      student.courses.push(course);
+      await this.studentRepository.save(student);
+    }
+
     // Assign students to the course
     course.students = students;
     console.log('managed to assign to the course!!!');
@@ -41,21 +50,20 @@ export class StudentCourseService {
     return course;
   }
 
-  async filterStudentsByYear(year?: number) {
-    // Create a base query
-    let queryBuilder = this.studentRepository
-      .createQueryBuilder('student')
-      .leftJoinAndSelect('student.courses', 'course');
+  async unAssignStudentsFromCourse(course_name: string, dto: AssignStudentsToCourseDto) {
+    const { studentIds } = dto;
+    const course = await this.courseRepository.findOneBy({ course_name });
 
-    // Add a filter for the year if it is provided
-    if (year !== undefined) {
-      queryBuilder = queryBuilder.andWhere('course.year = :year', { year: year });
+    const students = await this.studentRepository.find({
+      where: {
+        student_id: In(studentIds),
+      },
+    });
+
+    for (const student of students) {
+      student.courses = student.courses.filter(c => c.course_id !== course.course_id);
+      await this.studentRepository.save(student);
     }
-
-    // Execute the query and return the results
-    const students = await queryBuilder.getMany();
-
-    return students;
   }
 
 }
