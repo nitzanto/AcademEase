@@ -19,7 +19,6 @@ export class Course {
   year: number;
 
   @ManyToMany(() => Student, student => student.courses)
-  @JoinTable()
   students: Student[];
 
   constructor(course: Partial<Course>) {
