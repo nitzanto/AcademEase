@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
 import { StudentCourseService } from './student-course.service';
 import { AssignStudentsToCourseDto } from './dto/assign-students-to-course.dto';
 
@@ -29,7 +29,7 @@ export class StudentCourseController {
   }
 
 
-  @Post('assign/:course_name')
+  @Put('unassign/:course_name')
   async unAssignStudentsToCourse(
     @Param('course_name') course_name: string,
     @Body() assignStudentsDto: AssignStudentsToCourseDto,

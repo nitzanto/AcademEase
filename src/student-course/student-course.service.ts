@@ -51,6 +51,7 @@ export class StudentCourseService {
   }
 
   async unAssignStudentsFromCourse(course_name: string, dto: AssignStudentsToCourseDto) {
+    // handle if student doesnt exist within that course
     const { studentIds } = dto;
     const course = await this.courseRepository.findOneBy({ course_name });
 
@@ -58,11 +59,23 @@ export class StudentCourseService {
       where: {
         student_id: In(studentIds),
       },
+      relations: ['courses'], // Load the students' courses
     });
 
-    for (const student of students) {
-      student.courses = student.courses.filter(c => c.course_id !== course.course_id);
-      await this.studentRepository.save(student);
+    for (let student of students) {
+      if (student.courses) {
+        // Filter out the course to be unassigned from the student's courses
+        student.courses = student.courses.filter(c => c.course_id !== course.course_id);
+        // Save the changes to update the student's courses
+        await this.studentRepository.save(student);
+      }
+
+      if (course.students) {
+        // Filter out the student from the course's students
+        course.students = course.students.filter(s => s.student_id !== student.student_id);
+        // Save the changes to update the course's students
+        await this.courseRepository.save(course);
+      }
     }
   }
 
