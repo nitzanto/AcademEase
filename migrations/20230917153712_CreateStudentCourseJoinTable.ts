@@ -1,9 +1,9 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateStudentCourseJoinTable20230917153713 implements MigrationInterface {
+export class CreateStudentCourseJoinTable20230917153712 implements MigrationInterface {
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            CREATE TABLE student_course (
+            CREATE TABLE Student_Courses (
                 student_id INT NOT NULL,
                 course_id INT NOT NULL,
                 PRIMARY KEY (student_id, course_id),
@@ -15,7 +15,7 @@ export class CreateStudentCourseJoinTable20230917153713 implements MigrationInte
 
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            DROP TABLE student_course;
+            DROP TABLE Student_Courses;
         `);
     }
 }
