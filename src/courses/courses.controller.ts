@@ -61,36 +61,33 @@ export class CoursesController {
 
 
   @Post('assign/:course_name')
-  async assignStudentsToCourse(
-    @Param('course_name') course_name: string,
-    @Body() dto: ManageCourseStudentsDto,
-  ) {
-    const result = await this.coursesService.assignStudentsToCourse(
-      course_name,
-      dto,
-    );
+  async assignStudentsToCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() dto: ManageCourseStudentsDto) {
+    try {
+      const result = await this.coursesService.assignStudentsToCourse(
+        course_name,
+        dto,
+      );
 
-    if (result) {
-      return {
-        message: 'Students assigned to the course successfully.',
-      };
-    } else {
-      return {
-        message: 'Course or students not found.',
-      };
+      return res.json({ message: `Students assigned successfully to ${course_name}` });
+
+    } catch (err) {
+      throw new Error(`Error when attempting to assign students, err: ${err}`);
     }
+
   }
 
 
   @Put('unassign/:course_name')
-  async unAssignStudentsToCourse(
-    @Param('course_name') course_name: string,
-    @Body() dto: ManageCourseStudentsDto,
-  ) {
-    // Call the service to assign students to the course
-    return await this.coursesService.unAssignStudentsFromCourse(
-      course_name,
-      dto,
-    );
+  async unAssignStudentsToCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() dto: ManageCourseStudentsDto) {
+    try {
+      await this.coursesService.unAssignStudentsFromCourse(
+        course_name,
+        dto,
+      );
+
+      return res.json({ message: `Students unassigned successfully from ${course_name}` });
+    } catch (err) {
+      throw new Error(`Error when attempting to un-assign students, err: ${err}`);
+    }
   }
 }
