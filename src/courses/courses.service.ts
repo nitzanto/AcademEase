@@ -43,9 +43,25 @@ export class CoursesService {
   }
 
   async removeCourse(course_name: string): Promise<void> {
-    const course = await this.findOneCourse(course_name);
-    await this.coursesRepository.remove(course);
+    // Find the course by name and load the associated students
+    const course = await this.coursesRepository.findOne({
+        where: { course_name },
+        relations: ['students'],
+      },
+    );
+
+    if (!course) {
+      throw new NotFoundException(`Course with name "${course_name}" not found`);
+    }
+
+    // Disassociate students from the course
+    course.students = [];
+
+    // Save the modified course to disassociate students
+    await this.coursesRepository.save(course);
+    await this.coursesRepository.remove(course)
   }
+
 
   async assignStudentsToCourse(course_name: string, dto: ManageCourseStudentsDto) {
     const { course, students } = await this.getStudentsAndCourse(course_name, dto);
