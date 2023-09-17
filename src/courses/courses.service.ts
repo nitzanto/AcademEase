@@ -58,7 +58,7 @@ export class CoursesService {
     const { course, students } = await this.getStudentsAndCourse(course_name, dto);
 
     if (!course || students.length === 0) {
-      return null;
+      throw new Error(`No such student or course exist`)
     }
 
     for (let student of students) {
@@ -69,6 +69,10 @@ export class CoursesService {
 
   async unAssignStudentsFromCourse(course_name: string, dto: ManageCourseStudentsDto): Promise<void> {
     const { course, students } = await this.getStudentsAndCourse(course_name, dto);
+
+    if (!course || students.length === 0) {
+      throw new Error(`No such student or course exist`)
+    }
 
     for (let student of students) {
       if (student.courses) {

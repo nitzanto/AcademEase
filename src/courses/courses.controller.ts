@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, NotFoundException, HttpCode } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -11,21 +11,23 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {
   }
 
+  @HttpCode(201)
   @Post()
   async createCourse(@Res() res: Response, @Body() createCourseDto: CreateCourseDto) {
     try {
-      await this.coursesService.createCourse(createCourseDto);
+      const course = await this.coursesService.createCourse(createCourseDto);
       return res.json({ message: `Course created successfully` });
     } catch (err) {
-      throw new Error(`Error when attempting to create course, err: ${err}`);
+      return res.status(500).json({ error: `Error when attempting to create course ${err.message}` });
     }
   }
 
+  @HttpCode(200)
   @Get()
   async findAllCourses(@Res() res:Response) {
     try {
       const courses = await this.coursesService.findAllCourses()
-      return res.status(200).json(courses);
+      return res.json(courses);
     } catch (err) {
       if(err instanceof NotFoundException) {
         throw err;
@@ -34,16 +36,18 @@ export class CoursesController {
     }
   }
 
+  @HttpCode(200)
   @Get(':course_name')
   async findOneCourse(@Param('course_name') course_name: string , @Res() res:Response){
     try {
       const course = await this.coursesService.findOneCourse(course_name);
-      return res.status(200).json(course);
+      return res.json(course);
     } catch (err) {
       return res.status(500).json({ error: `Error when attempting to find course ${course_name}: ${err.message}` });
     }
   }
 
+  @HttpCode(201)
   @Put(':course_name')
   async updateCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() updateCourseDto: UpdateCourseDto) {
     try {
@@ -54,6 +58,7 @@ export class CoursesController {
     }
   }
 
+  @HttpCode(204)
   @Delete(':course_name')
   async removeCourse(@Res() res: Response, @Param('course_name') course_name: string) {
     try {
@@ -65,6 +70,7 @@ export class CoursesController {
   }
 
 
+  @HttpCode(201)
   @Post('assign/:course_name')
   async assignStudentsToCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() dto: ManageCourseStudentsDto) {
     try {
@@ -79,6 +85,7 @@ export class CoursesController {
   }
 
 
+  @HttpCode(200)
   @Put('unassign/:course_name')
   async unAssignStudentsToCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() dto: ManageCourseStudentsDto) {
     try {
