@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,25 +13,33 @@ export class CoursesService {
     private readonly coursesRepository: Repository<Course>,
     private readonly entityManager: EntityManager) {
   }
-  async create(createCourseDto: CreateCourseDto) {
+
+  async createCourse(createCourseDto: CreateCourseDto): Promise<void> {
     const course = new Course(createCourseDto);
     await this.entityManager.save(course);
   }
 
-  async findAll() {
+  async findAllCourses(): Promise<Course[]> {
     return await this.coursesRepository.find({});
   }
 
-  async findOne(course_name: string) {
-    return this.coursesRepository.findOneBy({course_name});
+  async findOneCourse(course_name: string): Promise<Course> {
+    const course = this.coursesRepository.findOneBy({ course_name });
+
+    if (!course) {
+      throw new NotFoundException(`Couldn't find the course: ${course_name}`);
+    }
+    return course;
   }
 
-  async update(course_name: string, updateCourseDto: UpdateCourseDto) {
-    await this.coursesRepository.update(course_name, updateCourseDto);
+  async updateCourse(course_name: string, updateCourseDto: UpdateCourseDto): Promise<void> {
+    const existingCourse = await this.findOneCourse(course_name);
+    Object.assign(existingCourse, updateCourseDto);
+    await this.coursesRepository.save(existingCourse);
   }
 
-  async remove(course_name: string) {
-    const course = await this.findOne(course_name);
+  async removeCourse(course_name: string): Promise<void> {
+    const course = await this.findOneCourse(course_name);
     await this.coursesRepository.remove(course);
   }
 }
