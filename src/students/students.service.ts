@@ -14,13 +14,13 @@ export class StudentsService {
   ) {
   }
 
-  async create(createStudentDto: CreateStudentDto): Promise<void> {
+  async createStudent(createStudentDto: CreateStudentDto): Promise<void> {
     const student = new Student(createStudentDto);
     await this.entityManager.save(student);
   }
 
 
-  async findAll(): Promise<Student[]> {
+  async findAllStudents(): Promise<Student[]> {
     const students = await this.studentsRepository.find({ relations: ['courses'] });
     if (!students) {
       throw new NotFoundException('Couldnt find students');
@@ -28,7 +28,7 @@ export class StudentsService {
     return students;
   }
 
-  async findOne(student_id: number): Promise<Student> {
+  async findOneStudent(student_id: number): Promise<Student> {
     const student = await this.studentsRepository.findOne({
       where: { student_id },
       relations: ['courses'],
@@ -41,12 +41,12 @@ export class StudentsService {
     return student;
   }
 
-  async update(student_id: number, updateStudentDto: UpdateStudentDto): Promise<void> {
+  async updateStudent(student_id: number, updateStudentDto: UpdateStudentDto): Promise<void> {
     await this.studentsRepository.update(student_id, updateStudentDto);
   }
 
-  async remove(student_id: number): Promise<void> {
-    const student = await this.findOne(student_id);
+  async removeStudent(student_id: number): Promise<void> {
+    const student = await this.findOneStudent(student_id);
 
     student.courses = [];
     await this.studentsRepository.save(student);
@@ -55,7 +55,7 @@ export class StudentsService {
   }
 
   async getStudentCoursesByYear(student_id: number, year: number): Promise<Student> {
-    const student = await this.findOne(student_id);
+    const student = await this.findOneStudent(student_id);
 
     student.courses = student.courses.filter(course => course.year === year);
 
@@ -64,7 +64,7 @@ export class StudentsService {
 
 
   async getStudentsCoursesByYear(year: number): Promise<Student[]> {
-    const students = await this.findAll();
+    const students = await this.findAllStudents();
 
     // Filter courses for each student by the specified year
     students.forEach(student => {
