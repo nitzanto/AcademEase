@@ -1,7 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Course } from '../../courses/entities/course.entity';
 
-@Entity()
+@Entity("Student")
 export class Student {
   @PrimaryGeneratedColumn()
   student_id: number;
@@ -16,7 +16,7 @@ export class Student {
   address: string;
 
   @ManyToMany(() => Course, { cascade: true, onDelete: 'CASCADE' })
-  @JoinTable()
+  @JoinTable({ name: 'Student_Courses' })
   courses: Course[];
 
   constructor(student: Partial<Student>) {

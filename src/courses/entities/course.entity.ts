@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Student } from '../../students/entities/student.entity';
 
-@Entity()
+@Entity("Course")
 export class Course {
   @PrimaryGeneratedColumn()
   course_id: number;
