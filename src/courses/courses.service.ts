@@ -28,7 +28,7 @@ export class CoursesService {
   }
 
   async findOneCourse(course_name: string): Promise<Course> {
-    const course = this.coursesRepository.findOneBy({ course_name });
+    const course = await this.coursesRepository.findOneBy({ course_name });
 
     if (!course) {
       throw new NotFoundException(`Couldn't find the course: ${course_name}`);
@@ -43,27 +43,12 @@ export class CoursesService {
   }
 
   async removeCourse(course_name: string): Promise<void> {
-    // Find the course by name and load the associated students
-    const course = await this.coursesRepository.findOne({
-        where: { course_name },
-        relations: ['students'],
-      },
-    );
-
-    if (!course) {
-      throw new NotFoundException(`Course with name "${course_name}" not found`);
-    }
-
-    // Disassociate students from the course
-    course.students = [];
-
-    // Save the modified course to disassociate students
-    await this.coursesRepository.save(course);
+    const course = await this.findOneCourse(course_name);
     await this.coursesRepository.remove(course)
   }
 
 
-  async assignStudentsToCourse(course_name: string, dto: ManageCourseStudentsDto) {
+  async assignStudentsToCourse(course_name: string, dto: ManageCourseStudentsDto): Promise<void> {
     const { course, students } = await this.getStudentsAndCourse(course_name, dto);
 
     if (!course || students.length === 0) {
@@ -74,8 +59,6 @@ export class CoursesService {
       student.courses.push(course);
       await this.studentRepository.save(student);
     }
-
-    return course;
   }
 
   async unAssignStudentsFromCourse(course_name: string, dto: ManageCourseStudentsDto): Promise<void> {

@@ -9,7 +9,7 @@ import {
   ParseIntPipe,
   Query,
   HttpCode,
-  Res,
+  Res, NotFoundException,
 } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
@@ -50,6 +50,9 @@ export class StudentsController {
       return students;
 
     } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
       throw new Error(`An error occurred while attempting to find all students: ${err}`);
     }
   }
@@ -67,6 +70,9 @@ export class StudentsController {
         return await this.studentsService.getStudentCoursesByYear(student_id, year);
       }
     } catch (err) {
+      if (err instanceof NotFoundException) {
+        throw err;
+      }
       throw new Error(`An error occurred while finding the student: ${err}`);
     }
 
@@ -76,7 +82,7 @@ export class StudentsController {
   @HttpCode(204)
   async updateStudent(@Param('student_id', ParseIntPipe) student_id: number,
                       @Body() updateStudentDto: UpdateStudentDto,
-                      @Res() res:Response){
+                      @Res() res: Response) {
     try {
       await this.studentsService.updateStudent(student_id, updateStudentDto);
       return res.json({ message: 'Student updated successfully' });

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Res } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Res, NotFoundException } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { UpdateCourseDto } from './dto/update-course.dto';
@@ -26,6 +26,9 @@ export class CoursesController {
     try {
       return await this.coursesService.findAllCourses();
     } catch (err) {
+      if(err instanceof NotFoundException) {
+        throw err;
+      }
       throw new Error(`Error when attempting to find all courses, err: ${err}`);
     }
   }
@@ -35,6 +38,9 @@ export class CoursesController {
     try {
       return await this.coursesService.findOneCourse(course_name);
     } catch (err) {
+      if(err instanceof NotFoundException) {
+        throw err;
+      }
       throw new Error(`Error when attempting to find course ${course_name}, err: ${err}`);
     }
   }
@@ -63,10 +69,7 @@ export class CoursesController {
   @Post('assign/:course_name')
   async assignStudentsToCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() dto: ManageCourseStudentsDto) {
     try {
-      const result = await this.coursesService.assignStudentsToCourse(
-        course_name,
-        dto,
-      );
+      await this.coursesService.assignStudentsToCourse(course_name, dto);
 
       return res.json({ message: `Students assigned successfully to ${course_name}` });
 
@@ -80,10 +83,7 @@ export class CoursesController {
   @Put('unassign/:course_name')
   async unAssignStudentsToCourse(@Res() res: Response, @Param('course_name') course_name: string, @Body() dto: ManageCourseStudentsDto) {
     try {
-      await this.coursesService.unAssignStudentsFromCourse(
-        course_name,
-        dto,
-      );
+      await this.coursesService.unAssignStudentsFromCourse(course_name, dto);
 
       return res.json({ message: `Students unassigned successfully from ${course_name}` });
     } catch (err) {
