@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe, Query } from '@nestjs/common';
 import { StudentsService } from './students.service';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
@@ -14,13 +14,25 @@ export class StudentsController {
   }
 
   @Get()
-  async findAll() {
-    return this.studentsService.findAll();
+  async findAll(@Query('year', new ParseIntPipe({ optional: true })) year?: number) {
+    if (year) {
+      return this.studentsService.getStudentsCoursesByYear(year);
+    } else {
+      return this.studentsService.findAll();
+    }
   }
 
   @Get(':student_id')
-  async findOne(@Param('student_id', ParseIntPipe) student_id: number) {
-    return this.studentsService.findOne(student_id);
+  findOne(
+    @Param('student_id', ParseIntPipe) student_id: number,
+    @Query('year', new ParseIntPipe({ optional: true })) year?: number,
+  ) {
+    if (!year) {
+      return this.studentsService.findOne(student_id);
+
+    } else {
+      return this.studentsService.getStudentCoursesByYear(student_id, year);
+    }
   }
 
   @Put(':student_id')

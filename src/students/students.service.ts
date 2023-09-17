@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStudentDto } from './dto/create-student.dto';
 import { UpdateStudentDto } from './dto/update-student.dto';
 import { EntityManager, Repository } from 'typeorm';
@@ -39,4 +39,40 @@ export class StudentsService {
     // Now, delete the student
     await this.studentsRepository.remove(student);
   }
+
+  async getStudentCoursesByYear(student_id: number, year: number): Promise<Student> {
+    const student = await this.studentsRepository.findOne({
+      where: { student_id },
+      relations: ['courses'], // Load the student's courses
+    });
+
+    console.log('Thats the student with courses: ', student);
+
+    if (!student) {
+      throw new NotFoundException(`Student with ID ${student_id} not found`);
+    }
+
+    // Filter courses by the specified year
+    student.courses = student.courses.filter(course => course.year === year);
+
+    return student;
+  }
+
+
+  async getStudentsCoursesByYear(year: number) {
+    const students = await this.studentsRepository.find({
+      where: {},
+      relations: ['courses'],
+    });
+
+
+    // Filter courses for each student by the specified year
+    students.forEach(student => {
+      student.courses = student.courses.filter(course => course.year === year);
+    });
+
+
+    return students;
+  }
+
 }
