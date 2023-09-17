@@ -20,11 +20,14 @@ export class StudentsService {
   }
 
   async findAll() {
-    return await this.studentsRepository.find({});
+    return await this.studentsRepository.find({ relations: ['courses'] });
   }
 
   findOne(student_id: number) {
-    return this.studentsRepository.findOneBy({ student_id });
+    return this.studentsRepository.findOne({
+      where: { student_id },
+      relations: ['courses'], // Load the student's courses
+    });
   }
 
   async update(student_id: number, updateStudentDto: UpdateStudentDto) {
@@ -35,6 +38,8 @@ export class StudentsService {
     // Find the student by ID
     const student = await this.findOne(student_id);
 
+    student.courses = [];
+    await this.studentsRepository.save(student);
 
     // Now, delete the student
     await this.studentsRepository.remove(student);
