@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
+import { CreateCourseDto } from '../dto/create-course.dto';
+import { UpdateCourseDto } from '../dto/update-course.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, In, Repository } from 'typeorm';
-import { Course } from './entities/course.entity';
-import { Student } from '../students/entities/student.entity';
-import { ManageCourseStudentsDto } from './dto/manage-course-students.dto';
+import { Course } from '../entities/course.entity';
+import { Student } from '../../students/entities/student.entity';
+import { ManageCourseStudentsDto } from '../dto/manage-course-students.dto';
 
 @Injectable()
 export class CoursesService {

@@ -11,10 +11,10 @@ import {
   HttpCode,
   Res, NotFoundException,
 } from '@nestjs/common';
-import { StudentsService } from './students.service';
-import { CreateStudentDto } from './dto/create-student.dto';
-import { UpdateStudentDto } from './dto/update-student.dto';
-import { Student } from './entities/student.entity';
+import { StudentsService } from '../services/students.service';
+import { CreateStudentDto } from '../dto/create-student.dto';
+import { UpdateStudentDto } from '../dto/update-student.dto';
+import { Student } from '../entities/student.entity';
 import { Response } from 'express';
 
 @Controller('students')

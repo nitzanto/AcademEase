@@ -1,9 +1,9 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Res, NotFoundException, HttpCode } from '@nestjs/common';
-import { CoursesService } from './courses.service';
-import { CreateCourseDto } from './dto/create-course.dto';
-import { UpdateCourseDto } from './dto/update-course.dto';
+import { CoursesService } from '../services/courses.service';
+import { CreateCourseDto } from '../dto/create-course.dto';
+import { UpdateCourseDto } from '../dto/update-course.dto';
 import { Response } from 'express';
-import { ManageCourseStudentsDto } from './dto/manage-course-students.dto';
+import { ManageCourseStudentsDto } from '../dto/manage-course-students.dto';
 
 @Controller('courses')
 export class CoursesController {
