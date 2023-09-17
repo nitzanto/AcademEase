@@ -98,7 +98,7 @@ export class StudentsController {
     }
   }
 
-  @HttpCode(204)
+  @HttpCode(200)
   @Delete(':student_id')
   async removeStudent(@Res() res: Response, @Param('student_id', ParseIntPipe) student_id: number) {
     try {
