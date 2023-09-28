@@ -157,7 +157,7 @@ npm i nest</code></pre>
     <li>Run the migration command to generate the tables in DB:</li>
     <pre><code>npm run typeorm:run-migrations</code></pre>
     <li>Run the application after connecting to the DB & running migrations:</li>
-    <pre><code>npm run start:dev</code></pre>
+    <pre><code>npm run start:prod</code></pre>
 </ol>
 
 <p>After running the migration the tables are generated and will be visible at MySQL WorkBench</p>
