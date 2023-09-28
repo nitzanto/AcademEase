@@ -140,12 +140,10 @@ Example request body:
     <li>MySQL Workbench, DBeaver etc.. for viewing the DB in real-time</li>
     <li>Postman, Insomnia etc.. for API Testing</li>
 </ul>
-    <h3><strong>Please make sure you have the most updated ZIP file on Google Drive since there was a small bug with migration and entities</strong></h3>
-
 <p>To run this project locally, follow these steps:</p>
 
 <ol>
-    <li>Download zipped file on Google Drive:</li>
+    <li>Clone the repository from Github:</li>
     <li>Navigate to the project directory:</li>
     <pre><code>cd your-repository</code></pre>
     <li>Install the project dependencies:</li>
