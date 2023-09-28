@@ -15,9 +15,20 @@ export class Student {
   @Column()
   address: string;
 
-  @ManyToMany(() => Course, { cascade: true, onDelete: 'CASCADE' })
-  @JoinTable({ name: 'Student_Courses' })
+  @ManyToMany(() => Course, (course) => course.students)
+  @JoinTable({
+    name: 'Student_Courses',
+    joinColumn: {
+      name: 'student_id',
+      referencedColumnName: 'student_id',
+    },
+    inverseJoinColumn: {
+      name: 'course_id',
+      referencedColumnName: 'course_id',
+    },
+  })
   courses: Course[];
+
 
   constructor(student: Partial<Student>) {
     Object.assign(this, student);
