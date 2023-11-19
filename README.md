@@ -146,18 +146,7 @@ Example request body:
     <li>Clone the repository from Github:</li>
     <li>Navigate to the project directory:</li>
     <pre><code>cd your-repository</code></pre>
-    <li>Install the project dependencies:</li>
-    <pre><code>npm install
-npm i nest</code></pre>
-   <p><strong>*** Make sure to have 2 terminals running: One for the container and a second one for running the application</strong></p>
-    <li>Run the DB container with docker-compose in another terminal (Docker Desktop must be turned on)</li>
-    <pre><code>docker-compose up</code></pre>
-    <li>Connect to the DB through MySQL WorkBench or any other application and then fill in the credentials found at
-        the .env file</li>
-    <li>Run the migration command to generate the tables in DB:</li>
-    <pre><code>npm run typeorm:run-migrations</code></pre>
-    <li>Run the application after connecting to the DB & running migrations:</li>
-    <pre><code>npm run start:prod</code></pre>
+    <pre><code>docker-compose up --build</code></pre>
 </ol>
 
 <p>After running the migration the tables are generated and will be visible at MySQL WorkBench</p>
