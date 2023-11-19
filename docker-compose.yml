@@ -6,3 +6,21 @@ services:
     ports:
       - '3306:3306'
 
+  academease:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      - NODE_ENV=development
+
+    depends_on:
+      - mysql
+
+    ports:
+      - '3000:3000'
+
+    volumes:
+      - .:/usr/src/app
+      - ./migrations:/usr/src/app/migrations
+
